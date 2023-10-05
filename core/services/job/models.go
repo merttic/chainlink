@@ -235,8 +235,9 @@ func (pr *PipelineRun) SetID(value string) error {
 
 // OCROracleSpec defines the job spec for OCR jobs.
 type OCROracleSpec struct {
-	ID                                     int32                `toml:"-"`
-	ContractAddress                        ethkey.EIP55Address  `toml:"contractAddress"`
+	ID              int32               `toml:"-"`
+	ContractAddress ethkey.EIP55Address `toml:"contractAddress"`
+	// Deprecated: TODO remove after DB migration?
 	P2PBootstrapPeers                      pq.StringArray       `toml:"p2pBootstrapPeers" db:"p2p_bootstrap_peers"`
 	P2PV2Bootstrappers                     pq.StringArray       `toml:"p2pv2Bootstrappers" db:"p2pv2_bootstrappers"`
 	IsBootstrapPeer                        bool                 `toml:"isBootstrapPeer"`

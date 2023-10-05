@@ -408,19 +408,6 @@ func TestConfig_Marshal(t *testing.T) {
 		OutgoingMessageBufferSize: ptr[int64](17),
 		PeerID:                    mustPeerID("12D3KooWMoejJznyDuEk5aX6GvbjaG12UzeornPCBNzMRqdwrFJw"),
 		TraceLogging:              ptr(true),
-		V1: toml.P2PV1{
-			Enabled:                          ptr(true),
-			AnnounceIP:                       mustIP("1.2.3.4"),
-			AnnouncePort:                     ptr[uint16](1234),
-			BootstrapCheckInterval:           models.MustNewDuration(time.Minute),
-			DefaultBootstrapPeers:            &[]string{"foo", "bar", "should", "these", "be", "typed"},
-			DHTAnnouncementCounterUserPrefix: ptr[uint32](4321),
-			DHTLookupInterval:                ptr[int64](9),
-			ListenIP:                         mustIP("4.3.2.1"),
-			ListenPort:                       ptr[uint16](9),
-			NewStreamTimeout:                 models.MustNewDuration(time.Second),
-			PeerstoreWriteInterval:           models.MustNewDuration(time.Minute),
-		},
 		V2: toml.P2PV2{
 			Enabled:           ptr(false),
 			AnnounceAddresses: &[]string{"a", "b", "c"},
@@ -859,19 +846,6 @@ OutgoingMessageBufferSize = 17
 PeerID = '12D3KooWMoejJznyDuEk5aX6GvbjaG12UzeornPCBNzMRqdwrFJw'
 TraceLogging = true
 
-[P2P.V1]
-Enabled = true
-AnnounceIP = '1.2.3.4'
-AnnouncePort = 1234
-BootstrapCheckInterval = '1m0s'
-DefaultBootstrapPeers = ['foo', 'bar', 'should', 'these', 'be', 'typed']
-DHTAnnouncementCounterUserPrefix = 4321
-DHTLookupInterval = 9
-ListenIP = '4.3.2.1'
-ListenPort = 9
-NewStreamTimeout = '1s'
-PeerstoreWriteInterval = '1m0s'
-
 [P2P.V2]
 Enabled = false
 AnnounceAddresses = ['a', 'b', 'c']
@@ -1299,19 +1273,7 @@ func Test_generalConfig_LogConfiguration(t *testing.T) {
 		effective = "# Effective Configuration, with defaults applied:\n"
 		warning   = "# Configuration warning:\n"
 
-		deprecated = `2 errors:
-	- P2P.V1: is deprecated and will be removed in a future version
-	- P2P.V1: 10 errors:
-		- AnnounceIP: is deprecated and will be removed in a future version
-		- AnnouncePort: is deprecated and will be removed in a future version
-		- BootstrapCheckInterval: is deprecated and will be removed in a future version
-		- DefaultBootstrapPeers: is deprecated and will be removed in a future version
-		- DHTAnnouncementCounterUserPrefix: is deprecated and will be removed in a future version
-		- DHTLookupInterval: is deprecated and will be removed in a future version
-		- ListenIP: is deprecated and will be removed in a future version
-		- ListenPort: is deprecated and will be removed in a future version
-		- NewStreamTimeout: is deprecated and will be removed in a future version
-		- PeerstoreWriteInterval: is deprecated and will be removed in a future version`
+		deprecated = `` // none
 	)
 	tests := []struct {
 		name         string
