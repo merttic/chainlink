@@ -10,6 +10,7 @@ import (
 	"github.com/smartcontractkit/chainlink/v2/core/logger"
 	"github.com/smartcontractkit/chainlink/v2/core/services"
 	"github.com/smartcontractkit/chainlink/v2/core/services/keystore/keys/csakey"
+	"github.com/smartcontractkit/chainlink/v2/core/services/relay/evm/mercury/wsrpc/cache"
 	"github.com/smartcontractkit/chainlink/v2/core/utils"
 )
 
@@ -58,7 +59,7 @@ func (conn *connection) checkout(ctx context.Context) (cco *clientCheckout, err 
 // not thread-safe, access must be serialized
 func (conn *connection) ensureStartedClient(ctx context.Context) error {
 	if len(conn.checkouts) == 0 {
-		conn.Client = conn.pool.newClient(conn.lggr, conn.clientPrivKey, conn.serverPubKey, conn.serverURL)
+		conn.Client = conn.pool.newClient(conn.lggr, conn.clientPrivKey, conn.serverPubKey, conn.serverURL, conn.pool.cacheSet)
 		return conn.Client.Start(ctx)
 	}
 	return nil
@@ -119,16 +120,19 @@ type pool struct {
 	connections map[string]map[credentials.StaticSizedPublicKey]*connection
 
 	// embedding newClient makes testing/mocking easier
-	newClient func(lggr logger.Logger, privKey csakey.KeyV2, serverPubKey []byte, serverURL string) Client
+	newClient func(lggr logger.Logger, privKey csakey.KeyV2, serverPubKey []byte, serverURL string, cacheSet cache.CacheSet) Client
 
 	mu sync.RWMutex
+
+	cacheSet cache.CacheSet
 
 	closed bool
 }
 
-func NewPool(lggr logger.Logger) Pool {
+func NewPool(lggr logger.Logger, cacheCfg cache.Config) Pool {
 	p := newPool(lggr.Named("Mercury.WSRPCPool"))
 	p.newClient = NewClient
+	p.cacheSet = cache.NewCacheSet(cacheCfg)
 	return p
 }
 

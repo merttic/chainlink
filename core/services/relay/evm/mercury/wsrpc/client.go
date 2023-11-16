@@ -19,6 +19,7 @@ import (
 
 	"github.com/smartcontractkit/chainlink/v2/core/logger"
 	"github.com/smartcontractkit/chainlink/v2/core/services/keystore/keys/csakey"
+	"github.com/smartcontractkit/chainlink/v2/core/services/relay/evm/mercury/wsrpc/cache"
 	"github.com/smartcontractkit/chainlink/v2/core/services/relay/evm/mercury/wsrpc/pb"
 	"github.com/smartcontractkit/chainlink/v2/core/utils"
 )
@@ -63,6 +64,7 @@ var (
 type Client interface {
 	services.Service
 	pb.MercuryClient
+	ServerURL() string
 }
 
 type Conn interface {
@@ -87,6 +89,8 @@ type client struct {
 	chStop                services.StopChan
 	chResetTransport      chan struct{}
 
+	cacheSet cache.CacheSet
+
 	timeoutCountMetric         prometheus.Counter
 	dialCountMetric            prometheus.Counter
 	dialSuccessCountMetric     prometheus.Counter
@@ -95,17 +99,18 @@ type client struct {
 }
 
 // Consumers of wsrpc package should not usually call NewClient directly, but instead use the Pool
-func NewClient(lggr logger.Logger, clientPrivKey csakey.KeyV2, serverPubKey []byte, serverURL string) Client {
-	return newClient(lggr, clientPrivKey, serverPubKey, serverURL)
+func NewClient(lggr logger.Logger, clientPrivKey csakey.KeyV2, serverPubKey []byte, serverURL string, cacheSet cache.CacheSet) Client {
+	return newClient(lggr, clientPrivKey, serverPubKey, serverURL, cacheSet)
 }
 
-func newClient(lggr logger.Logger, clientPrivKey csakey.KeyV2, serverPubKey []byte, serverURL string) *client {
+func newClient(lggr logger.Logger, clientPrivKey csakey.KeyV2, serverPubKey []byte, serverURL string, cacheSet cache.CacheSet) *client {
 	return &client{
 		csaKey:                     clientPrivKey,
 		serverPubKey:               serverPubKey,
 		serverURL:                  serverURL,
 		logger:                     lggr.Named("WSRPC").With("mercuryServerURL", serverURL),
 		chResetTransport:           make(chan struct{}, 1),
+		cacheSet:                   cacheSet,
 		chStop:                     make(services.StopChan),
 		timeoutCountMetric:         timeoutCount.WithLabelValues(serverURL),
 		dialCountMetric:            dialCount.WithLabelValues(serverURL),
@@ -277,6 +282,7 @@ func (w *client) Transmit(ctx context.Context, req *pb.TransmitRequest) (resp *p
 		w.logger.Warnw("Transmit call failed due to networking error", "err", err, "resp", resp)
 		incRequestStatusMetric(statusFailed)
 	} else {
+		// TODO: Does it need to bust the cache?
 		w.logger.Tracew("Transmit call succeeded", "resp", resp)
 		incRequestStatusMetric(statusSuccess)
 		setRequestLatencyMetric(float64(time.Since(start).Milliseconds()))
@@ -290,7 +296,16 @@ func (w *client) LatestReport(ctx context.Context, req *pb.LatestReportRequest) 
 	if err = w.waitForReady(ctx); err != nil {
 		return nil, errors.Wrap(err, "LatestReport failed")
 	}
-	resp, err = w.client.LatestReport(ctx, req)
+	if w.cacheSet == nil {
+		resp, err = w.client.LatestReport(ctx, req)
+	} else {
+		// TODO: can we not persist the cache to the client struct?
+		cache, err := w.cacheSet.Get(ctx, w)
+		if err != nil {
+			return nil, err
+		}
+		resp, err = cache.LatestReport(ctx, req)
+	}
 	if err != nil {
 		lggr.Errorw("LatestReport failed", "err", err, "resp", resp)
 	} else if resp.Error != "" {
@@ -299,4 +314,8 @@ func (w *client) LatestReport(ctx context.Context, req *pb.LatestReportRequest) 
 		lggr.Debugw("LatestReport succeeded", "resp", resp)
 	}
 	return
+}
+
+func (w *client) ServerURL() string {
+	return w.serverURL
 }

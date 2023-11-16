@@ -31,6 +31,7 @@ func Test_Client_Transmit(t *testing.T) {
 		conn := &mocks.MockConn{
 			Ready: true,
 		}
+		// TODO: test caching?
 		c := newClient(lggr, csakey.KeyV2{}, nil, "")
 		c.conn = conn
 		c.client = wsrpcClient

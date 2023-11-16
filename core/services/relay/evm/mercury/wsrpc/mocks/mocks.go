@@ -24,6 +24,7 @@ func (m MockWSRPCClient) Transmit(ctx context.Context, in *pb.TransmitRequest) (
 func (m MockWSRPCClient) LatestReport(ctx context.Context, in *pb.LatestReportRequest) (*pb.LatestReportResponse, error) {
 	return m.LatestReportF(ctx, in)
 }
+func (m MockWSRPCClient) ServerURL() string { return "mock server url" }
 
 type MockConn struct {
 	State  connectivity.State

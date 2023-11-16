@@ -88,19 +88,24 @@ require (
 	go.dedis.ch/kyber/v3 v3.1.0
 	go.uber.org/multierr v1.11.0
 	go.uber.org/zap v1.26.0
-	golang.org/x/crypto v0.14.0
+	golang.org/x/crypto v0.15.0
 	golang.org/x/exp v0.0.0-20230713183714-613f0c0eb8a1
-	golang.org/x/sync v0.4.0
-	golang.org/x/term v0.13.0
-	golang.org/x/text v0.13.0
+	golang.org/x/sync v0.5.0
+	golang.org/x/term v0.14.0
+	golang.org/x/text v0.14.0
 	golang.org/x/time v0.3.0
-	golang.org/x/tools v0.14.0
+	golang.org/x/tools v0.15.0
 	gonum.org/v1/gonum v0.14.0
 	google.golang.org/grpc v1.58.3
 	google.golang.org/protobuf v1.31.0
 	gopkg.in/guregu/null.v2 v2.1.2
 	gopkg.in/guregu/null.v4 v4.0.0
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
+)
+
+require (
+	github.com/ugorji/go/codec/codecgen v1.2.11 // indirect
+	golang.org/x/mod v0.14.0 // indirect
 )
 
 require (
@@ -362,8 +367,8 @@ require (
 	go.opentelemetry.io/proto/otlp v1.0.0 // indirect
 	go.uber.org/ratelimit v0.2.0 // indirect
 	golang.org/x/arch v0.3.0 // indirect
-	golang.org/x/net v0.17.0 // indirect
-	golang.org/x/sys v0.13.0 // indirect
+	golang.org/x/net v0.18.0 // indirect
+	golang.org/x/sys v0.14.0 // indirect
 	google.golang.org/genproto v0.0.0-20230717213848-3f92550aa753 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20230717213848-3f92550aa753 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20230717213848-3f92550aa753 // indirect

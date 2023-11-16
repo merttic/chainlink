@@ -40,6 +40,7 @@ func (c *mockClient) Close() error {
 func (c *mockClient) Name() string                   { return "mock client" }
 func (c *mockClient) Ready() error                   { return nil }
 func (c *mockClient) HealthReport() map[string]error { return nil }
+func (c *mockClient) ServerURL() string              { return "mock client url" }
 
 func newMockClient(lggr logger.Logger) *mockClient {
 	return &mockClient{}
