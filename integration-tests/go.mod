@@ -22,7 +22,7 @@ require (
 	github.com/scylladb/go-reflectx v1.0.1
 	github.com/segmentio/ksuid v1.0.4
 	github.com/slack-go/slack v0.12.2
-	github.com/smartcontractkit/chainlink-common v0.1.7-0.20231117021201-6814387d8d3e
+	github.com/smartcontractkit/chainlink-common v0.1.7-0.20231120070316-5638dafacc93
 	github.com/smartcontractkit/chainlink-testing-framework v1.19.1
 	github.com/smartcontractkit/chainlink/v2 v2.0.0-00010101000000-000000000000
 	github.com/smartcontractkit/libocr v0.0.0-20231107151413-13e0202ae8d7
@@ -38,6 +38,12 @@ require (
 	go.uber.org/zap v1.26.0
 	golang.org/x/sync v0.4.0
 	gopkg.in/guregu/null.v4 v4.0.0
+)
+
+require (
+	github.com/go-json-experiment/json v0.0.0-20231102232822-2e55bd4e08b0 // indirect
+	github.com/smartcontractkit/chainlink-relay v0.1.7-0.20231031114820-e9826d481111 // indirect
+	github.com/smartcontractkit/sqlx v1.3.5-0.20210805004948-4be295aacbeb // indirect
 )
 
 // Pin K8s versions as their updates are highly disruptive and go mod keeps wanting to update them
@@ -387,8 +393,8 @@ require (
 	github.com/shopspring/decimal v1.3.1 // indirect
 	github.com/sirupsen/logrus v1.9.3 // indirect
 	github.com/smartcontractkit/caigo v0.0.0-20230621050857-b29a4ca8c704 // indirect
-	github.com/smartcontractkit/chainlink-cosmos v0.4.1-0.20231117191236-12eab01a4542 // indirect
-	github.com/smartcontractkit/chainlink-solana v1.0.3-0.20231117191230-aa6640f2edd1 // indirect
+	github.com/smartcontractkit/chainlink-cosmos v0.4.1-0.20231120072345-ec92d212f606 // indirect
+	github.com/smartcontractkit/chainlink-solana v1.0.3-0.20231120073604-89592fceb0af // indirect
 	github.com/smartcontractkit/chainlink-starknet/relayer v0.0.1-beta-test.0.20231117204155-b253a2f56664 // indirect
 	github.com/smartcontractkit/tdh2/go/ocr2/decryptionplugin v0.0.0-20230906073235-9e478e5e19f1 // indirect
 	github.com/smartcontractkit/wsrpc v0.7.2 // indirect

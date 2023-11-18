@@ -16,6 +16,7 @@ import (
 	"github.com/smartcontractkit/libocr/commontypes"
 
 	"github.com/smartcontractkit/chainlink-common/pkg/services"
+
 	"github.com/smartcontractkit/chainlink/v2/core/cbor"
 	"github.com/smartcontractkit/chainlink/v2/core/chains/evm/client"
 	"github.com/smartcontractkit/chainlink/v2/core/logger"
@@ -23,7 +24,7 @@ import (
 	"github.com/smartcontractkit/chainlink/v2/core/services/ocr2/plugins/functions/config"
 	"github.com/smartcontractkit/chainlink/v2/core/services/ocr2/plugins/threshold"
 	"github.com/smartcontractkit/chainlink/v2/core/services/pg"
-	evmrelayTypes "github.com/smartcontractkit/chainlink/v2/core/services/relay/evm/types"
+	evmcommontypes "github.com/smartcontractkit/chainlink/v2/core/services/relay/evm/types"
 	"github.com/smartcontractkit/chainlink/v2/core/services/s4"
 	"github.com/smartcontractkit/chainlink/v2/core/services/synchronization/telem"
 )
@@ -139,7 +140,7 @@ type functionsListener struct {
 	logger             logger.Logger
 	urlsMonEndpoint    commontypes.MonitoringEndpoint
 	decryptor          threshold.Decryptor
-	logPollerWrapper   evmrelayTypes.LogPollerWrapper
+	logPollerWrapper   evmcommontypes.LogPollerWrapper
 }
 
 var _ FunctionsListener = &functionsListener{}
@@ -165,7 +166,7 @@ func NewFunctionsListener(
 	lggr logger.Logger,
 	urlsMonEndpoint commontypes.MonitoringEndpoint,
 	decryptor threshold.Decryptor,
-	logPollerWrapper evmrelayTypes.LogPollerWrapper,
+	logPollerWrapper evmcommontypes.LogPollerWrapper,
 ) *functionsListener {
 	return &functionsListener{
 		client:             client,
@@ -328,7 +329,7 @@ func (l *functionsListener) HandleOffchainRequest(ctx context.Context, request *
 	return l.handleRequest(ctx, requestId, request.SubscriptionId, subscriptionOwner, RequestFlags{}, &request.Data)
 }
 
-func (l *functionsListener) handleOracleRequestV1(request *evmrelayTypes.OracleRequest) {
+func (l *functionsListener) handleOracleRequestV1(request *evmcommontypes.OracleRequest) {
 	defer l.shutdownWaitGroup.Done()
 	l.logger.Infow("handleOracleRequestV1: oracle request v1 received", "requestID", formatRequestId(request.RequestId))
 	ctx, cancel := l.getNewHandlerContext()
@@ -454,7 +455,7 @@ func (l *functionsListener) handleRequest(ctx context.Context, requestID Request
 	return nil
 }
 
-func (l *functionsListener) handleOracleResponseV1(response *evmrelayTypes.OracleResponse) {
+func (l *functionsListener) handleOracleResponseV1(response *evmcommontypes.OracleResponse) {
 	defer l.shutdownWaitGroup.Done()
 	l.logger.Infow("oracle response v1 received", "requestID", formatRequestId(response.RequestId))
 

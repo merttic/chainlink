@@ -9,7 +9,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	ocrtypes "github.com/smartcontractkit/libocr/offchainreporting2plus/types"
 
-	relaytypes "github.com/smartcontractkit/chainlink-relay/pkg/types"
+	commontypes "github.com/smartcontractkit/chainlink-common/pkg/types"
 
 	"github.com/smartcontractkit/chainlink/v2/core/chains/evm"
 	"github.com/smartcontractkit/chainlink/v2/core/chains/evm/logpoller"
@@ -31,15 +31,10 @@ func newChainReader(lggr logger.Logger, chain evm.Chain, ropts *types.RelayOpts)
 	contractID := common.HexToAddress(ropts.ContractID)
 
 	if relayConfig.ChainReader == nil {
-		err := relaytypes.ErrorChainReaderUnsupported{}
-		// until chain reader is not the default, this should be logged as info here
-		lggr.Info(err.Error())
-		return nil, relaytypes.ErrorChainReaderUnsupported{}
+		return nil, commontypes.UnsupportedError
 	}
 
 	if err := validateChainReaderConfig(*relayConfig.ChainReader); err != nil {
-		err = fmt.Errorf("%w: %w", relaytypes.ErrorChainReaderInvalidConfig{}, err)
-		lggr.Error(err.Error())
 		return nil, err
 	}
 
@@ -60,10 +55,10 @@ func validateChainReaderConfig(cfg types.ChainReaderConfig) error {
 			case types.Event:
 				err = validateEvents(abi, chainReaderDefinition)
 			default:
-				return fmt.Errorf("%w: invalid chain reader definition read type: %d", relaytypes.ErrorChainReaderInvalidConfig{}, chainReaderDefinition.ReadType)
+				return fmt.Errorf("%w: invalid chain reader definition read type: %d", commontypes.InvalidConfigError, chainReaderDefinition.ReadType)
 			}
 			if err != nil {
-				return fmt.Errorf("%w: invalid chain reader config for contract: %q chain reading definition: %q, err: %w", relaytypes.ErrorChainReaderInvalidConfig{}, contractName, chainReadingDefinitionName, err)
+				return fmt.Errorf("%w: invalid chain reader config for contract: %q chain reading definition: %q, err: %w", commontypes.InvalidConfigError, contractName, chainReadingDefinitionName, err)
 			}
 		}
 	}
@@ -160,7 +155,7 @@ func (cr *chainReader) initialize() error {
 
 type ChainReaderService interface {
 	services.ServiceCtx
-	relaytypes.ChainReader
+	commontypes.ChainReader
 }
 
 type chainReader struct {
@@ -175,23 +170,23 @@ func NewChainReaderService(lggr logger.Logger, contractID common.Address, lp log
 }
 
 func (cr *chainReader) Encode(ctx context.Context, item any, itemType string) (ocrtypes.Report, error) {
-	return nil, fmt.Errorf("Unimplemented method Encode called %w", relaytypes.ErrorChainReaderUnsupported{})
+	return nil, fmt.Errorf("Unimplemented method Encode called %w", commontypes.UnsupportedError)
 }
 
 func (cr *chainReader) Decode(_ context.Context, raw []byte, into any, itemType string) error {
-	return fmt.Errorf("Unimplemented method Decode called %w", relaytypes.ErrorChainReaderUnsupported{})
+	return fmt.Errorf("Unimplemented method Decode called %w", commontypes.UnsupportedError)
 }
 
 func (cr *chainReader) GetMaxEncodingSize(ctx context.Context, n int, itemType string) (int, error) {
-	return 0, fmt.Errorf("Unimplemented method GetMaxDecodingSize called %w", relaytypes.ErrorChainReaderUnsupported{})
+	return 0, fmt.Errorf("Unimplemented method GetMaxDecodingSize called %w", commontypes.UnsupportedError)
 }
 
 func (cr *chainReader) GetMaxDecodingSize(ctx context.Context, n int, itemType string) (int, error) {
-	return 0, fmt.Errorf("Unimplemented method GetMaxDecodingSize called %w", relaytypes.ErrorChainReaderUnsupported{})
+	return 0, fmt.Errorf("Unimplemented method GetMaxDecodingSize called %w", commontypes.UnsupportedError)
 }
 
-func (cr *chainReader) GetLatestValue(ctx context.Context, bc relaytypes.BoundContract, method string, params any, returnVal any) error {
-	return fmt.Errorf("Unimplemented method GetLatestValue called %w", relaytypes.ErrorChainReaderUnsupported{})
+func (cr *chainReader) GetLatestValue(ctx context.Context, bc commontypes.BoundContract, method string, params any, returnVal any) error {
+	return fmt.Errorf("Unimplemented method GetLatestValue called %w", commontypes.UnsupportedError)
 }
 
 func (cr *chainReader) Start(ctx context.Context) error {

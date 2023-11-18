@@ -14,6 +14,7 @@ import (
 	libocr2 "github.com/smartcontractkit/libocr/offchainreporting2plus"
 
 	"github.com/smartcontractkit/chainlink-common/pkg/assets"
+
 	"github.com/smartcontractkit/chainlink/v2/core/bridges"
 	"github.com/smartcontractkit/chainlink/v2/core/chains/evm"
 	"github.com/smartcontractkit/chainlink/v2/core/logger"
@@ -28,7 +29,7 @@ import (
 	s4_plugin "github.com/smartcontractkit/chainlink/v2/core/services/ocr2/plugins/s4"
 	"github.com/smartcontractkit/chainlink/v2/core/services/ocr2/plugins/threshold"
 	"github.com/smartcontractkit/chainlink/v2/core/services/pg"
-	evmrelayTypes "github.com/smartcontractkit/chainlink/v2/core/services/relay/evm/types"
+	evmcommontypes "github.com/smartcontractkit/chainlink/v2/core/services/relay/evm/types"
 	"github.com/smartcontractkit/chainlink/v2/core/services/s4"
 	"github.com/smartcontractkit/chainlink/v2/core/utils"
 )
@@ -46,7 +47,7 @@ type FunctionsServicesConfig struct {
 	URLsMonEndpoint   commontypes.MonitoringEndpoint
 	EthKeystore       keystore.Eth
 	ThresholdKeyShare []byte
-	LogPollerWrapper  evmrelayTypes.LogPollerWrapper
+	LogPollerWrapper  evmcommontypes.LogPollerWrapper
 }
 
 const (

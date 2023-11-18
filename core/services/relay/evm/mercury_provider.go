@@ -23,7 +23,7 @@ var _ commontypes.MercuryProvider = (*mercuryProvider)(nil)
 
 type mercuryProvider struct {
 	configWatcher      *configWatcher
-	chainReader        relaytypes.ChainReader
+	chainReader        commontypes.ChainReader
 	mercuryChainReader relaymercury.ChainReader
 	transmitter        mercury.Transmitter
 	reportCodecV1      relaymercuryv1.ReportCodec
@@ -36,7 +36,7 @@ type mercuryProvider struct {
 
 func NewMercuryProvider(
 	configWatcher *configWatcher,
-	chainReader relaytypes.ChainReader,
+	chainReader commontypes.ChainReader,
 	mercuryChainReader relaymercury.ChainReader,
 	transmitter mercury.Transmitter,
 	reportCodecV1 relaymercuryv1.ReportCodec,
@@ -116,7 +116,7 @@ func (p *mercuryProvider) MercuryServerFetcher() relaymercury.MercuryServerFetch
 	return p.transmitter
 }
 
-func (p *mercuryProvider) ChainReader() relaytypes.ChainReader {
+func (p *mercuryProvider) ChainReader() commontypes.ChainReader {
 	return p.chainReader
 }
 

@@ -20,13 +20,6 @@ import (
 	"github.com/smartcontractkit/chainlink/v2/core/utils"
 )
 
-type RelayOpts struct {
-	// TODO BCF-2508 -- should anyone ever get the raw config bytes that are embedded in args? if not,
-	// make this private and wrap the arg fields with funcs on RelayOpts
-	relaytypes.RelayArgs
-	c *RelayConfig
-}
-
 type ChainReaderConfig struct {
 	// ChainContractReaders key is contract name
 	ChainContractReaders map[string]ChainContractReader `json:"chainContractReaders"`

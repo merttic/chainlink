@@ -54,7 +54,7 @@ type Relayer struct {
 	mercuryPool      wsrpc.Pool
 	eventBroadcaster pg.EventBroadcaster
 	pgCfg            pg.QConfig
-	chainReader      relaytypes.ChainReader
+	chainReader      commontypes.ChainReader
 }
 
 type CSAETHKeystore interface {
@@ -543,7 +543,7 @@ type medianProvider struct {
 	contractTransmitter ContractTransmitter
 	reportCodec         median.ReportCodec
 	medianContract      *medianContract
-	chainReader         relaytypes.ChainReader
+	chainReader         commontypes.ChainReader
 	ms                  services.MultiStart
 }
 
@@ -593,6 +593,6 @@ func (p *medianProvider) ContractConfigTracker() ocrtypes.ContractConfigTracker 
 	return p.configWatcher.ContractConfigTracker()
 }
 
-func (p *medianProvider) ChainReader() relaytypes.ChainReader {
+func (p *medianProvider) ChainReader() commontypes.ChainReader {
 	return p.chainReader
 }

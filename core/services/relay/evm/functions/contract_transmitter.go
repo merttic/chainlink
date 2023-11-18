@@ -22,7 +22,7 @@ import (
 	"github.com/smartcontractkit/chainlink/v2/core/services"
 	"github.com/smartcontractkit/chainlink/v2/core/services/ocr2/plugins/functions/encoding"
 	"github.com/smartcontractkit/chainlink/v2/core/services/pg"
-	evmRelayTypes "github.com/smartcontractkit/chainlink/v2/core/services/relay/evm/types"
+	evmcommontypes "github.com/smartcontractkit/chainlink/v2/core/services/relay/evm/types"
 	"github.com/smartcontractkit/chainlink/v2/core/utils"
 )
 
@@ -56,7 +56,7 @@ type contractTransmitter struct {
 }
 
 var _ FunctionsContractTransmitter = &contractTransmitter{}
-var _ evmRelayTypes.RouteUpdateSubscriber = &contractTransmitter{}
+var _ evmcommontypes.RouteUpdateSubscriber = &contractTransmitter{}
 
 func transmitterFilterName(addr common.Address) string {
 	return logpoller.FilterName("FunctionsOCR2ContractTransmitter", addr.String())
