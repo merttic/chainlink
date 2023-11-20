@@ -12,15 +12,25 @@ import (
 
 	commontypes "github.com/smartcontractkit/chainlink-common/pkg/types"
 
-	"github.com/smartcontractkit/chainlink/v2/core/chains/evm"
 	"github.com/smartcontractkit/chainlink/v2/core/chains/evm/logpoller"
 	"github.com/smartcontractkit/chainlink/v2/core/logger"
 	"github.com/smartcontractkit/chainlink/v2/core/services"
 	"github.com/smartcontractkit/chainlink/v2/core/services/relay/evm/types"
 )
 
-// constructor for ChainReader, returns nil if there is any error
-func newChainReader(lggr logger.Logger, chain evm.Chain, ropts *types.RelayOpts) (*chainReader, error) {
+type ChainReaderService interface {
+	services.ServiceCtx
+	commontypes.ChainReader
+}
+
+type chainReader struct {
+	lggr       logger.Logger
+	contractID common.Address
+	lp         logpoller.LogPoller
+}
+
+// NewChainReaderService constructor for ChainReader, returns nil if there are any errors.
+func NewChainReaderService(lggr logger.Logger, lp logpoller.LogPoller, ropts *types.RelayOpts) (*chainReader, error) {
 	relayConfig, err := ropts.RelayConfig()
 	if err != nil {
 		return nil, fmt.Errorf("failed parsing RelayConfig: %w", err)
@@ -35,11 +45,53 @@ func newChainReader(lggr logger.Logger, chain evm.Chain, ropts *types.RelayOpts)
 		return nil, errors.ErrUnsupported
 	}
 
-	if err := validateChainReaderConfig(*relayConfig.ChainReader); err != nil {
+	if err = validateChainReaderConfig(*relayConfig.ChainReader); err != nil {
 		return nil, err
 	}
 
-	return NewChainReaderService(lggr, contractID, chain.LogPoller())
+	return &chainReader{lggr.Named("ChainReader"), contractID, lp}, nil
+}
+
+func (cr *chainReader) Name() string { return cr.lggr.Name() }
+
+func (cr *chainReader) initialize() error {
+	// Initialize chain reader, start cache polling loop, etc.
+	return nil
+}
+
+func (cr *chainReader) Start(ctx context.Context) error {
+	if err := cr.initialize(); err != nil {
+		return fmt.Errorf("Failed to initialize ChainReader: %w", err)
+	}
+	return nil
+}
+
+func (cr *chainReader) Close() error { return nil }
+
+func (cr *chainReader) Ready() error { return nil }
+
+func (cr *chainReader) HealthReport() map[string]error {
+	return map[string]error{cr.Name(): nil}
+}
+
+func (cr *chainReader) GetLatestValue(ctx context.Context, bc commontypes.BoundContract, method string, params any, returnVal any) error {
+	return fmt.Errorf("Unimplemented method GetLatestValue called %w", errors.ErrUnsupported)
+}
+
+func (cr *chainReader) Encode(ctx context.Context, item any, itemType string) (ocrtypes.Report, error) {
+	return nil, fmt.Errorf("Unimplemented method Encode called %w", errors.ErrUnsupported)
+}
+
+func (cr *chainReader) Decode(_ context.Context, raw []byte, into any, itemType string) error {
+	return fmt.Errorf("Unimplemented method Decode called %w", errors.ErrUnsupported)
+}
+
+func (cr *chainReader) GetMaxEncodingSize(ctx context.Context, n int, itemType string) (int, error) {
+	return 0, fmt.Errorf("Unimplemented method GetMaxDecodingSize called %w", errors.ErrUnsupported)
+}
+
+func (cr *chainReader) GetMaxDecodingSize(ctx context.Context, n int, itemType string) (int, error) {
+	return 0, fmt.Errorf("Unimplemented method GetMaxDecodingSize called %w", errors.ErrUnsupported)
 }
 
 func validateChainReaderConfig(cfg types.ChainReaderConfig) error {
@@ -148,58 +200,3 @@ func areChainReaderArgumentsValid(contractArgs []abi.Argument, chainReaderArgs [
 	}
 	return true
 }
-
-func (cr *chainReader) initialize() error {
-	// Initialize chain reader, start cache polling loop, etc.
-	return nil
-}
-
-type ChainReaderService interface {
-	services.ServiceCtx
-	commontypes.ChainReader
-}
-
-type chainReader struct {
-	lggr       logger.Logger
-	contractID common.Address
-	lp         logpoller.LogPoller
-}
-
-// chainReader constructor
-func NewChainReaderService(lggr logger.Logger, contractID common.Address, lp logpoller.LogPoller) (*chainReader, error) {
-	return &chainReader{lggr.Named("ChainReader"), contractID, lp}, nil
-}
-
-func (cr *chainReader) Encode(ctx context.Context, item any, itemType string) (ocrtypes.Report, error) {
-	return nil, fmt.Errorf("Unimplemented method Encode called %w", errors.ErrUnsupported)
-}
-
-func (cr *chainReader) Decode(_ context.Context, raw []byte, into any, itemType string) error {
-	return fmt.Errorf("Unimplemented method Decode called %w", errors.ErrUnsupported)
-}
-
-func (cr *chainReader) GetMaxEncodingSize(ctx context.Context, n int, itemType string) (int, error) {
-	return 0, fmt.Errorf("Unimplemented method GetMaxDecodingSize called %w", errors.ErrUnsupported)
-}
-
-func (cr *chainReader) GetMaxDecodingSize(ctx context.Context, n int, itemType string) (int, error) {
-	return 0, fmt.Errorf("Unimplemented method GetMaxDecodingSize called %w", errors.ErrUnsupported)
-}
-
-func (cr *chainReader) GetLatestValue(ctx context.Context, bc commontypes.BoundContract, method string, params any, returnVal any) error {
-	return fmt.Errorf("Unimplemented method GetLatestValue called %w", errors.ErrUnsupported)
-}
-
-func (cr *chainReader) Start(ctx context.Context) error {
-	if err := cr.initialize(); err != nil {
-		return fmt.Errorf("Failed to initialize ChainReader: %w", err)
-	}
-	return nil
-}
-func (cr *chainReader) Close() error { return nil }
-
-func (cr *chainReader) Ready() error { return nil }
-func (cr *chainReader) HealthReport() map[string]error {
-	return map[string]error{cr.Name(): nil}
-}
-func (cr *chainReader) Name() string { return cr.lggr.Name() }
