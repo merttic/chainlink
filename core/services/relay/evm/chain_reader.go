@@ -2,6 +2,7 @@ package evm
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strings"
 
@@ -31,7 +32,7 @@ func newChainReader(lggr logger.Logger, chain evm.Chain, ropts *types.RelayOpts)
 	contractID := common.HexToAddress(ropts.ContractID)
 
 	if relayConfig.ChainReader == nil {
-		return nil, commontypes.UnsupportedError
+		return nil, errors.ErrUnsupported
 	}
 
 	if err := validateChainReaderConfig(*relayConfig.ChainReader); err != nil {
@@ -55,10 +56,10 @@ func validateChainReaderConfig(cfg types.ChainReaderConfig) error {
 			case types.Event:
 				err = validateEvents(abi, chainReaderDefinition)
 			default:
-				return fmt.Errorf("%w: invalid chain reader definition read type: %d", commontypes.InvalidConfigError, chainReaderDefinition.ReadType)
+				return fmt.Errorf("%w: invalid chain reader definition read type: %d", commontypes.ErrInvalidConfig, chainReaderDefinition.ReadType)
 			}
 			if err != nil {
-				return fmt.Errorf("%w: invalid chain reader config for contract: %q chain reading definition: %q, err: %w", commontypes.InvalidConfigError, contractName, chainReadingDefinitionName, err)
+				return fmt.Errorf("%w: invalid chain reader config for contract: %q chain reading definition: %q, err: %w", commontypes.ErrInvalidConfig, contractName, chainReadingDefinitionName, err)
 			}
 		}
 	}
@@ -170,23 +171,23 @@ func NewChainReaderService(lggr logger.Logger, contractID common.Address, lp log
 }
 
 func (cr *chainReader) Encode(ctx context.Context, item any, itemType string) (ocrtypes.Report, error) {
-	return nil, fmt.Errorf("Unimplemented method Encode called %w", commontypes.UnsupportedError)
+	return nil, fmt.Errorf("Unimplemented method Encode called %w", errors.ErrUnsupported)
 }
 
 func (cr *chainReader) Decode(_ context.Context, raw []byte, into any, itemType string) error {
-	return fmt.Errorf("Unimplemented method Decode called %w", commontypes.UnsupportedError)
+	return fmt.Errorf("Unimplemented method Decode called %w", errors.ErrUnsupported)
 }
 
 func (cr *chainReader) GetMaxEncodingSize(ctx context.Context, n int, itemType string) (int, error) {
-	return 0, fmt.Errorf("Unimplemented method GetMaxDecodingSize called %w", commontypes.UnsupportedError)
+	return 0, fmt.Errorf("Unimplemented method GetMaxDecodingSize called %w", errors.ErrUnsupported)
 }
 
 func (cr *chainReader) GetMaxDecodingSize(ctx context.Context, n int, itemType string) (int, error) {
-	return 0, fmt.Errorf("Unimplemented method GetMaxDecodingSize called %w", commontypes.UnsupportedError)
+	return 0, fmt.Errorf("Unimplemented method GetMaxDecodingSize called %w", errors.ErrUnsupported)
 }
 
 func (cr *chainReader) GetLatestValue(ctx context.Context, bc commontypes.BoundContract, method string, params any, returnVal any) error {
-	return fmt.Errorf("Unimplemented method GetLatestValue called %w", commontypes.UnsupportedError)
+	return fmt.Errorf("Unimplemented method GetLatestValue called %w", errors.ErrUnsupported)
 }
 
 func (cr *chainReader) Start(ctx context.Context) error {
