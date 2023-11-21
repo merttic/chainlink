@@ -27,19 +27,19 @@ func newChainReader(lggr logger.Logger, chain evm.Chain, ropts *types.RelayOpts)
 	}
 
 	if !common.IsHexAddress(ropts.ContractID) {
-		return nil, fmt.Errorf("invalid contractID, expected hex address")
+		return nil, fmt.Errorf("%w: invalid contractID, expected hex address", commontypes.ErrInvalidConfig)
 	}
 	contractID := common.HexToAddress(ropts.ContractID)
 
 	if relayConfig.ChainReader == nil {
-		return nil, errors.ErrUnsupported
+		return nil, fmt.Errorf("%w: ChainReader missing from RelayConfig", errors.ErrUnsupported)
 	}
 
 	if err := validateChainReaderConfig(*relayConfig.ChainReader); err != nil {
 		return nil, err
 	}
 
-	return NewChainReaderService(lggr, contractID, chain.LogPoller())
+	return &chainReader{lggr.Named("ChainReader"), contractID, chain.LogPoller()}, nil
 }
 
 func validateChainReaderConfig(cfg types.ChainReaderConfig) error {
@@ -163,11 +163,6 @@ type chainReader struct {
 	lggr       logger.Logger
 	contractID common.Address
 	lp         logpoller.LogPoller
-}
-
-// chainReader constructor
-func NewChainReaderService(lggr logger.Logger, contractID common.Address, lp logpoller.LogPoller) (*chainReader, error) {
-	return &chainReader{lggr.Named("ChainReader"), contractID, lp}, nil
 }
 
 func (cr *chainReader) Encode(ctx context.Context, item any, itemType string) (ocrtypes.Report, error) {
