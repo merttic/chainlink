@@ -11,6 +11,7 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
+	"github.com/smartcontractkit/chainlink-common/pkg/services/servicetest"
 	"github.com/smartcontractkit/chainlink/v2/core/chains/evm/gas/rollups/mocks"
 
 	"github.com/smartcontractkit/chainlink/v2/common/config"
@@ -50,8 +51,7 @@ func TestL1GasPriceOracle(t *testing.T) {
 		}).Return(common.BigToHash(l1BaseFee).Bytes(), nil)
 
 		oracle := NewL1GasPriceOracle(logger.TestLogger(t), ethClient, config.ChainArbitrum)
-		require.NoError(t, oracle.Start(testutils.Context(t)))
-		t.Cleanup(func() { assert.NoError(t, oracle.Close()) })
+		servicetest.Run(t, oracle)
 
 		gasPrice, err := oracle.GasPrice(testutils.Context(t))
 		require.NoError(t, err)
@@ -72,8 +72,7 @@ func TestL1GasPriceOracle(t *testing.T) {
 		}).Return(common.BigToHash(l1BaseFee).Bytes(), nil)
 
 		oracle := NewL1GasPriceOracle(logger.TestLogger(t), ethClient, config.ChainKroma)
-		require.NoError(t, oracle.Start(testutils.Context(t)))
-		t.Cleanup(func() { assert.NoError(t, oracle.Close()) })
+		servicetest.Run(t, oracle)
 
 		gasPrice, err := oracle.GasPrice(testutils.Context(t))
 		require.NoError(t, err)
@@ -94,8 +93,7 @@ func TestL1GasPriceOracle(t *testing.T) {
 		}).Return(common.BigToHash(l1BaseFee).Bytes(), nil)
 
 		oracle := NewL1GasPriceOracle(logger.TestLogger(t), ethClient, config.ChainOptimismBedrock)
-		require.NoError(t, oracle.Start(testutils.Context(t)))
-		t.Cleanup(func() { assert.NoError(t, oracle.Close()) })
+		servicetest.Run(t, oracle)
 
 		gasPrice, err := oracle.GasPrice(testutils.Context(t))
 		require.NoError(t, err)

@@ -22,6 +22,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"gopkg.in/guregu/null.v4"
 
+	"github.com/smartcontractkit/chainlink-common/pkg/services/servicetest"
 	"github.com/smartcontractkit/chainlink/v2/core/auth"
 	"github.com/smartcontractkit/chainlink/v2/core/bridges"
 	"github.com/smartcontractkit/chainlink/v2/core/internal/cltest"
@@ -89,8 +90,7 @@ func TestRunner(t *testing.T) {
 
 	_, placeHolderAddress := cltest.MustInsertRandomKey(t, keyStore.Eth())
 
-	require.NoError(t, runner.Start(testutils.Context(t)))
-	t.Cleanup(func() { assert.NoError(t, runner.Close()) })
+	servicetest.Run(t, runner)
 
 	t.Run("gets the election result winner", func(t *testing.T) {
 		var httpURL string

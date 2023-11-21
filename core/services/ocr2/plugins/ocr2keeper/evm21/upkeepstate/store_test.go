@@ -14,6 +14,7 @@ import (
 
 	ocr2keepers "github.com/smartcontractkit/chainlink-automation/pkg/v3/types"
 
+	"github.com/smartcontractkit/chainlink-common/pkg/services/servicetest"
 	"github.com/smartcontractkit/chainlink/v2/core/internal/testutils"
 	"github.com/smartcontractkit/chainlink/v2/core/internal/testutils/pgtest"
 	"github.com/smartcontractkit/chainlink/v2/core/logger"
@@ -346,7 +347,7 @@ func TestUpkeepStateStore_SetSelectIntegration(t *testing.T) {
 			scanner := &mockScanner{}
 			store := NewUpkeepStateStore(orm, lggr, scanner)
 
-			require.NoError(t, store.Start(ctx))
+			servicetest.Run(t, store)
 
 			t.Cleanup(func() {
 				t.Log("cleaning up database")
@@ -379,8 +380,6 @@ func TestUpkeepStateStore_SetSelectIntegration(t *testing.T) {
 			observedLogs.TakeAll()
 
 			require.Equal(t, 0, observedLogs.Len())
-
-			require.NoError(t, store.Close())
 		})
 	}
 }

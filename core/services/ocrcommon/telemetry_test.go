@@ -17,6 +17,7 @@ import (
 	"github.com/smartcontractkit/chainlink-common/pkg/reportingplugins/mercury"
 	mercuryv1 "github.com/smartcontractkit/chainlink-common/pkg/reportingplugins/mercury/v1"
 	mercury_v2 "github.com/smartcontractkit/chainlink-common/pkg/reportingplugins/mercury/v2"
+	"github.com/smartcontractkit/chainlink-common/pkg/services/servicetest"
 
 	"github.com/smartcontractkit/chainlink/v2/core/internal/testutils"
 	"github.com/smartcontractkit/chainlink/v2/core/logger"
@@ -213,7 +214,7 @@ func TestSendEATelemetry(t *testing.T) {
 	lggr, _ := logger.TestLoggerObserved(t, zap.WarnLevel)
 	doneCh := make(chan struct{})
 	enhancedTelemService := NewEnhancedTelemetryService(&jb, enhancedTelemChan, doneCh, monitoringEndpoint, lggr.Named("Enhanced Telemetry Mercury"))
-	require.NoError(t, enhancedTelemService.Start(testutils.Context(t)))
+	servicetest.Run(t, enhancedTelemService)
 	trrs := pipeline.TaskRunResults{
 		pipeline.TaskRunResult{
 			Task: &pipeline.BridgeTask{
@@ -324,7 +325,7 @@ func TestCollectAndSend(t *testing.T) {
 	doneCh := make(chan struct{})
 
 	enhancedTelemService := NewEnhancedTelemetryService(&jb, enhancedTelemChan, doneCh, monitoringEndpoint, lggr.Named("Enhanced Telemetry"))
-	require.NoError(t, enhancedTelemService.Start(testutils.Context(t)))
+	servicetest.Run(t, enhancedTelemService)
 	finalResult := &pipeline.FinalResult{
 		Values:      []interface{}{"123456"},
 		AllErrors:   nil,

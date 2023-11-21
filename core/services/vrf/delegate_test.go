@@ -8,6 +8,7 @@ import (
 
 	"github.com/jmoiron/sqlx"
 
+	"github.com/smartcontractkit/chainlink-common/pkg/services/servicetest"
 	"github.com/smartcontractkit/chainlink/v2/core/bridges"
 	"github.com/smartcontractkit/chainlink/v2/core/chains/evm"
 	"github.com/smartcontractkit/chainlink/v2/core/chains/evm/assets"
@@ -177,7 +178,7 @@ func setup(t *testing.T) (vrfUniverse, *v1.Listener, job.Job) {
 		listener.RunHeadListener(func() {})
 	}()
 	t.Cleanup(func() { listener.Stop(t) })
-	require.NoError(t, listener.Start(testutils.Context(t)))
+	servicetest.Run(t, listener)
 	return vuni, listener, jb
 }
 

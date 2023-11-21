@@ -9,8 +9,10 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/smartcontractkit/chainlink-common/pkg/services/servicetest"
 	"github.com/smartcontractkit/chainlink/v2/core/internal/testutils"
 	"github.com/smartcontractkit/chainlink/v2/core/logger"
+	"github.com/smartcontractkit/chainlink/v2/core/services/job"
 	"github.com/smartcontractkit/chainlink/v2/core/store/models"
 	"github.com/smartcontractkit/chainlink/v2/core/utils"
 )
@@ -103,8 +105,7 @@ func TestNurse(t *testing.T) {
 	nrse := NewNurse(newMockConfig(t), l)
 	nrse.AddCheck("test", func() (bool, Meta) { return true, Meta{} })
 
-	require.NoError(t, nrse.Start())
-	defer func() { require.NoError(t, nrse.Close()) }()
+	servicetest.Run(t, job.NewServiceAdapter(nrse))
 
 	require.NoError(t, nrse.appendLog(time.Now(), "test", Meta{}))
 
@@ -128,7 +129,6 @@ func TestNurse(t *testing.T) {
 	n2, err := nrse.totalProfileBytes()
 	require.NoError(t, err)
 	require.Greater(t, n2, uint64(0))
-
 }
 
 func profileExists(t *testing.T, nrse *Nurse, typ string) bool {

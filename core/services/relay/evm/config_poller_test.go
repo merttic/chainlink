@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/ethereum/go-ethereum"
+
 	"github.com/smartcontractkit/libocr/gethwrappers2/ocrconfigurationstoreevmsimple"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
@@ -28,6 +29,7 @@ import (
 	ocrtypes "github.com/smartcontractkit/libocr/offchainreporting2plus/types"
 	ocrtypes2 "github.com/smartcontractkit/libocr/offchainreporting2plus/types"
 
+	"github.com/smartcontractkit/chainlink-common/pkg/services/servicetest"
 	"github.com/smartcontractkit/chainlink/v2/core/chains/evm/client"
 	evmclient "github.com/smartcontractkit/chainlink/v2/core/chains/evm/client"
 	evmClientMocks "github.com/smartcontractkit/chainlink/v2/core/chains/evm/client/mocks"
@@ -88,8 +90,7 @@ func TestConfigPoller(t *testing.T) {
 		ctx := testutils.Context(t)
 		lorm := logpoller.NewORM(testutils.SimulatedChainID, db, lggr, cfg)
 		lp = logpoller.NewLogPoller(lorm, ethClient, lggr, 100*time.Millisecond, false, 1, 2, 2, 1000)
-		require.NoError(t, lp.Start(ctx))
-		t.Cleanup(func() { lp.Close() })
+		servicetest.Run(t, lp)
 	}
 
 	t.Run("LatestConfig errors if there is no config in logs and config store is unconfigured", func(t *testing.T) {

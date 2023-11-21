@@ -21,6 +21,7 @@ import (
 	"go.uber.org/zap/zapcore"
 
 	"github.com/smartcontractkit/chainlink-common/pkg/services"
+	"github.com/smartcontractkit/chainlink-common/pkg/services/servicetest"
 	evmclimocks "github.com/smartcontractkit/chainlink/v2/core/chains/evm/client/mocks"
 	evmtypes "github.com/smartcontractkit/chainlink/v2/core/chains/evm/types"
 	"github.com/smartcontractkit/chainlink/v2/core/gethwrappers/generated/log_emitter"
@@ -350,8 +351,7 @@ func TestLogPoller_Replay(t *testing.T) {
 		ec.On("FilterLogs", mock.Anything, mock.Anything).Return([]types.Log{log1}, nil).Maybe() // in case task gets delayed by >= 100ms
 
 		t.Cleanup(lp.reset)
-		require.NoError(t, lp.Start(ctx))
-		t.Cleanup(func() { assert.NoError(t, lp.Close()) })
+		servicetest.Run(t, lp)
 
 		select {
 		case <-ctx.Done():
@@ -388,8 +388,7 @@ func TestLogPoller_Replay(t *testing.T) {
 		ec.On("FilterLogs", mock.Anything, mock.Anything).Return([]types.Log{log1}, nil).Maybe() // in case task gets delayed by >= 100ms
 
 		t.Cleanup(lp.reset)
-		require.NoError(t, lp.Start(ctx))
-		t.Cleanup(func() { assert.NoError(t, lp.Close()) })
+		servicetest.Run(t, lp)
 
 		select {
 		case <-ctx.Done():
@@ -401,8 +400,7 @@ func TestLogPoller_Replay(t *testing.T) {
 	// ReplayAsync should return as soon as replayStart is received
 	t.Run("ReplayAsync success", func(t *testing.T) {
 		t.Cleanup(lp.reset)
-		require.NoError(t, lp.Start(testutils.Context(t)))
-		t.Cleanup(func() { assert.NoError(t, lp.Close()) })
+		servicetest.Run(t, lp)
 
 		lp.ReplayAsync(1)
 
@@ -411,8 +409,7 @@ func TestLogPoller_Replay(t *testing.T) {
 
 	t.Run("ReplayAsync error", func(t *testing.T) {
 		t.Cleanup(lp.reset)
-		require.NoError(t, lp.Start(testutils.Context(t)))
-		t.Cleanup(func() { assert.NoError(t, lp.Close()) })
+		servicetest.Run(t, lp)
 
 		anyErr := errors.New("async error")
 		observedLogs.TakeAll()

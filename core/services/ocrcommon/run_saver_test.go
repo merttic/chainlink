@@ -4,9 +4,8 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/mock"
-	"github.com/stretchr/testify/require"
 
-	"github.com/smartcontractkit/chainlink/v2/core/internal/testutils"
+	"github.com/smartcontractkit/chainlink-common/pkg/services/servicetest"
 	"github.com/smartcontractkit/chainlink/v2/core/logger"
 	"github.com/smartcontractkit/chainlink/v2/core/services/pipeline"
 	"github.com/smartcontractkit/chainlink/v2/core/services/pipeline/mocks"
@@ -22,7 +21,7 @@ func TestRunSaver(t *testing.T) {
 		logger.TestLogger(t),
 		1000,
 	)
-	require.NoError(t, rs.Start(testutils.Context(t)))
+	servicetest.Run(t, rs)
 	for i := 0; i < 100; i++ {
 		d := i
 		pipelineRunner.On("InsertFinishedRun", mock.Anything, mock.Anything, mock.Anything, mock.Anything).
@@ -33,5 +32,4 @@ func TestRunSaver(t *testing.T) {
 			Once()
 		rr <- &pipeline.Run{ID: int64(i)}
 	}
-	require.NoError(t, rs.Close())
 }

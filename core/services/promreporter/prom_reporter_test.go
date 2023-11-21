@@ -6,10 +6,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
+	"github.com/smartcontractkit/chainlink-common/pkg/services/servicetest"
 	evmtypes "github.com/smartcontractkit/chainlink/v2/core/chains/evm/types"
 	"github.com/smartcontractkit/chainlink/v2/core/internal/cltest"
 	"github.com/smartcontractkit/chainlink/v2/core/internal/mocks"
@@ -44,8 +44,7 @@ func Test_PromReporter_OnNewLongestChain(t *testing.T) {
 			}).
 			Return()
 
-		require.NoError(t, reporter.Start(testutils.Context(t)))
-		defer func() { assert.NoError(t, reporter.Close()) }()
+		servicetest.Run(t, reporter)
 
 		head := newHead()
 		reporter.OnNewLongestChain(testutils.Context(t), &head)
@@ -75,8 +74,7 @@ func Test_PromReporter_OnNewLongestChain(t *testing.T) {
 			}).
 			Return()
 		reporter := promreporter.NewPromReporter(db.DB, logger.TestLogger(t), backend, 10*time.Millisecond)
-		require.NoError(t, reporter.Start(testutils.Context(t)))
-		defer func() { assert.NoError(t, reporter.Close()) }()
+		servicetest.Run(t, reporter)
 
 		etx := cltest.MustInsertUnconfirmedEthTxWithBroadcastLegacyAttempt(t, txStore, 0, fromAddress)
 		cltest.MustInsertUnconfirmedEthTxWithBroadcastLegacyAttempt(t, txStore, 1, fromAddress)
@@ -112,8 +110,7 @@ func Test_PromReporter_OnNewLongestChain(t *testing.T) {
 				subscribeCalls.Add(1)
 			}).
 			Return()
-		require.NoError(t, reporter.Start(testutils.Context(t)))
-		defer func() { assert.NoError(t, reporter.Close()) }()
+		servicetest.Run(t, reporter)
 
 		head := newHead()
 		reporter.OnNewLongestChain(testutils.Context(t), &head)
