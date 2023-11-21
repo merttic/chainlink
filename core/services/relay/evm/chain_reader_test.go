@@ -7,7 +7,6 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/ethereum/go-ethereum/common"
 	types2 "github.com/smartcontractkit/chainlink-common/pkg/types"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -54,7 +53,7 @@ func TestNewChainReader(t *testing.T) {
 
 	t.Run("happy path", func(t *testing.T) {
 		chain.On("LogPoller").Return(lp)
-		_, err2 := newChainReader(lggr, chain, ropts)
+		_, err2 := NewChainReaderService(lggr, chain.LogPoller(), ropts)
 		assert.NoError(t, err2)
 	})
 
@@ -62,7 +61,7 @@ func TestNewChainReader(t *testing.T) {
 		rargs := types2.RelayArgs{ContractID: "invalid hex string", RelayConfig: r}
 		ropts = types.NewRelayOpts(rargs)
 		require.NotNil(t, ropts)
-		_, err2 := newChainReader(lggr, chain, ropts)
+		_, err2 := NewChainReaderService(lggr, chain.LogPoller(), ropts)
 		assert.ErrorIs(t, err2, types2.ErrInvalidConfig)
 		assert.ErrorContains(t, err2, "invalid contractID")
 	})
@@ -75,7 +74,7 @@ func TestNewChainReader(t *testing.T) {
 		rargs = types2.RelayArgs{ContractID: contractID.String(), RelayConfig: r2}
 		ropts = types.NewRelayOpts(rargs)
 		require.NotNil(t, ropts)
-		_, err2 = newChainReader(lggr, chain, ropts)
+		_, err2 = NewChainReaderService(lggr, chain.LogPoller(), ropts)
 		assert.ErrorIs(t, err2, types2.ErrInvalidConfig)
 		assert.ErrorContains(t, err2, "return values: [result,extraResult] don't match abi method outputs: [result]")
 	})
@@ -87,7 +86,7 @@ func TestNewChainReader(t *testing.T) {
 		rargs = types2.RelayArgs{ContractID: contractID.String(), RelayConfig: r2}
 		ropts = types.NewRelayOpts(rargs)
 		require.NotNil(t, ropts)
-		_, err2 = newChainReader(lggr, chain, ropts)
+		_, err2 = NewChainReaderService(lggr, chain.LogPoller(), ropts)
 		assert.ErrorIs(t, err2, errors.ErrUnsupported)
 		assert.ErrorContains(t, err2, "ChainReader missing from RelayConfig")
 	})
@@ -96,7 +95,10 @@ func TestNewChainReader(t *testing.T) {
 func TestChainReaderStartClose(t *testing.T) {
 	lggr := logger.TestLogger(t)
 	lp := mocklogpoller.NewLogPoller(t)
-	chainReader := chainReader{lggr, common.Address{}, lp}
+	chainReader := chainReader{
+		lggr: lggr,
+		lp:   lp,
+	}
 	err := chainReader.Start(testutils.Context(t))
 	assert.NoError(t, err)
 	err = chainReader.Close()
